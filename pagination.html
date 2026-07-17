@@ -1,0 +1,32 @@
+<nav>
+<ul class="pagination">
+
+{% if jobs.has_previous %}
+<li class="page-item">
+<a class="page-link page-btn"
+data-page="{{ jobs.previous_page_number }}">
+Previous
+</a>
+</li>
+{% endif %}
+
+{% for num in jobs.paginator.page_range %}
+<li class="page-item">
+<a class="page-link page-btn"
+data-page="{{ num }}">
+{{ num }}
+</a>
+</li>
+{% endfor %}
+
+{% if jobs.has_next %}
+<li class="page-item">
+<a class="page-link page-btn"
+data-page="{{ jobs.next_page_number }}">
+Next
+</a>
+</li>
+{% endif %}
+
+</ul>
+</nav>

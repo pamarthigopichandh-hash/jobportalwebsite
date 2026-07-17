@@ -1,0 +1,171 @@
+{% extends 'jobapp/base.html' %}
+{% load static %}
+{% block body_block %}
+
+<style>
+body {
+    padding-top: 100px;
+}
+
+.card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.card-header {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.badge {
+    font-size: 0.9rem;
+}
+
+/* Layout */
+.card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* LEFT SIDE */
+.details {
+    flex: 1;
+}
+
+/* RIGHT SIDE COLUMN */
+.right-side {
+    flex: 0 0 260px;
+    margin-left: 25px;
+}
+
+/* ATS Score Widget */
+.ats-score-box {
+    padding: 20px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #007bff, #00c6ff);
+    color: white;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.ats-score-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    display: block;
+    margin-top: 10px;
+}
+
+/* Exam Box */
+.exam-box {
+    margin-top: 20px;
+    padding: 18px;
+    border-radius: 12px;
+    background: #f8f9fa;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+</style>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            Application Details
+        </div>
+
+        <div class="card-body">
+
+            <!-- LEFT SIDE -->
+            <div class="details">
+
+                <h5 class="mb-3">Applicant Information</h5>
+                <p><strong>Name:</strong> {{ application.full_name }}</p>
+                <p><strong>Email:</strong> {{ application.email }}</p>
+                <p><strong>Phone:</strong> {{ application.phone }}</p>
+
+                <h5 class="mt-4 mb-3">Job Information</h5>
+                <p><strong>Job Title:</strong> {{ application.job.title }}</p>
+                <p><strong>Company:</strong> {{ application.job.company }}</p>
+                <p><strong>Location:</strong> {{ application.job.location }}</p>
+
+                <h5 class="mt-4 mb-3">Cover Letter</h5>
+                <p>{{ application.cover_letter|linebreaks }}</p>
+
+                <h5 class="mt-4 mb-3">Resume</h5>
+                {% if application.resume %}
+                    <a href="{{ application.resume.url }}" 
+                       class="btn btn-outline-primary btn-sm" 
+                       target="_blank">
+                        <i class="bi bi-file-earmark-text"></i> Download Resume
+                    </a>
+                {% else %}
+                    <p>No resume uploaded.</p>
+                {% endif %}
+
+                <h5 class="mt-4 mb-3">Application Status</h5>
+                <span class="badge
+                    {% if application.status == 'Accepted' %}bg-success
+                    {% elif application.status == 'Rejected' %}bg-danger
+                    {% elif application.status == 'Viewed' %}bg-info text-dark
+                    {% elif application.status == 'Withdrawn' %}bg-secondary
+                    {% else %}bg-warning text-dark
+                    {% endif %}">
+                    {{ application.status }}
+                </span>
+
+                <div class="mt-4">
+                    <a href="{% url 'applied_jobs' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to My Jobs
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- RIGHT SIDE -->
+            <div class="right-side">
+
+                <!-- ATS Score -->
+                <div class="ats-score-box">
+                    ATS Score
+                    <span class="ats-score-value">
+                        {{ application.ats_score|default:"0" }}%
+                    </span>
+                </div>
+
+                <!-- Exam Details -->
+                <div class="exam-box">
+                    <h5 class="mb-3">Exam Details</h5>
+
+                    {% if application.exam_completed %}
+
+                        <h4 class="text-primary">
+                            {{ application.exam_score }}
+                        </h4>
+                        <small class="text-muted">Exam Score</small>
+                        <br><br>
+
+                        {% if application.status == "Accepted" %}
+                            <span class="badge bg-success">Passed</span>
+                        {% else %}
+                            <span class="badge bg-danger">Failed</span>
+                        {% endif %}
+
+                        <span class="badge bg-info text-dark ms-2">
+                            Attempted
+                        </span>
+
+                    {% else %}
+                        <span class="badge bg-warning text-dark">
+                            Not Attempted
+                        </span>
+                    {% endif %}
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

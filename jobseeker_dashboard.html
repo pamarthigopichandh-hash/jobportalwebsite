@@ -1,0 +1,143 @@
+{% extends 'jobapp/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body_block %}
+
+<style>
+body {
+    padding-top: 110px;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    transition: 0.2s ease-in-out;
+   
+}
+</style>
+<div class="container mt-5">
+
+    <!-- USER INFO -->
+    <div class="card shadow p-4 mb-4">
+        <h3> JOB SEEKER Dashboard</h3>
+        <h2><i class="bi bi-person-circle"></i> {{ request.user.username }}</h2>
+        
+        <hr>
+        <p><strong>Username:</strong> {{ request.user.username }}</p>
+        <p><strong>Email:</strong> {{ request.user.email }}</p>
+        <p><strong>Last login:</strong> {{ request.user.last_login|date:"d M Y H:i" }}</p>
+
+        <div class="mt-3">
+            <a href="{% url 'jobs' %}" class="btn btn-primary">Browse Jobs</a>
+            <a href="{% url 'applied_jobs' %}" class="btn btn-secondary">My Applications</a>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="row text-center mb-4">
+        <div class="col-md-2">
+            <div class="card p-3 shadow">
+                <h5>{{ total_applied }}</h5>
+                <small>Total Applied</small>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card p-3 shadow text-primary">
+                <h5>{{ pending_count }}</h5>
+                <small>Pending</small>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card p-3 shadow text-warning">
+                <h5>{{ viewed_count }}</h5>
+                <small>Viewed</small>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card p-3 shadow text-success">
+                <h5>{{ accepted_count }}</h5>
+                <small>Accepted</small>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card p-3 shadow text-danger">
+                <h5>{{ rejected_count }}</h5>
+                <small>Rejected</small>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card p-3 shadow text-secondary">
+                <h5>{{ withdrawn_count }}</h5>
+                <small>Withdrawn</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECENT APPLICATIONS -->
+    <div class="card shadow p-4">
+        <h5 class="mb-3">Recent Applications</h5>
+
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Job</th>
+                    <th>Status</th>
+                    <th>Applied At</th>
+                    <th>Resume</th>
+                    <th>Interview</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in recent_apps %}
+                <tr>
+                    <td>{{ app.job.title }}</td>
+                    <td>
+                        <span class="badge bg-info">{{ app.status|title }}</span>
+                    </td>
+                    <td>{{ app.applied_at|date:"d M Y H:i" }}</td>
+                    <td>
+                        {% if app.resume %}
+                            <a href="{{ app.resume.url }}" target="_blank">View</a>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if app.interview %}
+                            {{ app.interview.interview_date }}
+                            {{ app.interview.interview_time }}<br>
+                            {{ app.interview.location }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">
+                        No applications yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+        <div class="row text-center mb-4">
+            <div class="col">Applied<br><b>{{ total_applied }}</b></div>
+            <div class="col text-primary">Pending<br><b>{{ pending_count }}</b></div>
+            <div class="col text-warning">Viewed<br><b>{{ viewed_count }}</b></div>
+            <div class="col text-success">Accepted<br><b>{{ accepted_count }}</b></div>
+            <div class="col text-danger">Rejected<br><b>{{ rejected_count }}</b></div>
+        </div>
+
+
+
+        <a href="{% url 'applied_jobs' %}" class="btn btn-outline-primary mt-3">
+            View All Applied Jobs
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

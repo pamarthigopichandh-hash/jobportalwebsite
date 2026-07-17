@@ -1,0 +1,256 @@
+{% extends 'jobapp/base.html' %}
+{% load math_filters %}
+
+{% block body_block %}
+
+<style>
+
+/* Background */
+body {
+    background: linear-gradient(135deg, #eef2ff, #f8f9fa);
+}
+
+/* Header Animation */
+.page-title {
+    animation: fadeSlide 0.6s ease-in-out;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Perfect vertical alignment */
+}
+@keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Main Job Card */
+.job-card {
+    border-radius: 20px;
+    transition: all 0.4s ease;
+    background: #ffffff;
+}
+.job-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+}
+
+/* === CLEAN STAT DESIGN === */
+.stat-box {
+    border-radius: 15px;
+    padding: 12px;
+    text-align: center;
+    transition: 0.3s ease;
+    height: 100%; /* Equal height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.stat-box i {
+    font-size: 18px;
+    margin-bottom: 4px;
+}
+.stat-box h6 {
+    font-size: 14px;
+    margin-bottom: 0;
+    font-weight: 600;
+}
+.stat-box p {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+}
+.stat-box:hover {
+    transform: translateY(-4px);
+}
+
+/* Soft color themes */
+.stat-total { background: #f1f3f5; color: #212529; }
+.stat-pending { background: #fff3cd; color: #856404; }
+.stat-accepted { background: #d4edda; color: #155724; }
+.stat-rejected { background: #f8d7da; color: #721c24; }
+.stat-viewed { background: #d1ecf1; color: #0c5460; }
+
+/* Progress */
+.progress {
+    height: 10px;
+    border-radius: 50px;
+}
+.progress-bar {
+    transition: width 1s ease-in-out;
+}
+
+/* Footer Buttons */
+.card-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Center all buttons */
+    gap: 10px; /* Equal spacing */
+}
+.card-footer .btn {
+    transition: 0.3s;
+    flex: 1 1 auto;
+    min-width: 100px;
+    text-align: center;
+}
+.card-footer .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 12px rgba(0,0,0,0.12);
+}
+
+/* Empty State */
+.empty-state {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 50px;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+</style>
+
+<div class="container py-5">
+<h2>Employer Dashboard</h2>
+<h3><i class="bi bi-person-circle"></i> {{ user.username }}</h3>
+    <!-- Header -->
+    <div class="page-title mb-5">
+        <h2 class="fw-bold text-primary mb-0">
+            <i class="bi bi-briefcase-fill me-2"></i> My Posted Jobs
+        </h2>
+        <a href="{% url 'employer_post_job' %}" 
+           class="btn btn-primary rounded-pill px-4 py-2 shadow">
+            <i class="bi bi-plus-circle me-1"></i> Post Job
+        </a>
+    </div>
+
+    {% if jobs %}
+    <div class="row g-4">
+        {% for job in jobs %}
+        <div class="col-md-6 col-lg-4">
+
+            <div class="card job-card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <!-- Title -->
+                    <h5 class="fw-bold text-dark mb-2">{{ job.title }}</h5>
+
+                    <!-- Info -->
+                    <p class="text-muted small mb-1">
+                        <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+                        {{ job.location }}
+                    </p>
+                    <p class="text-muted small mb-3">
+                        <i class="bi bi-calendar-check-fill text-success me-1"></i>
+                        Deadline: {{ job.deadline }}
+                    </p>
+
+                    <!-- Stats Grid -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <div class="stat-box stat-total">
+                                <i class="bi bi-people-fill"></i>
+                                <h6>Total</h6>
+                                <p>{{ job.total_count }}</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-box stat-pending">
+                                <i class="bi bi-hourglass-split"></i>
+                                <h6>Pending</h6>
+                                <p>{{ job.pending_count }}</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-box stat-accepted">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <h6>Accepted</h6>
+                                <p>{{ job.accepted_count }}</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-box stat-rejected">
+                                <i class="bi bi-x-circle-fill"></i>
+                                <h6>Rejected</h6>
+                                <p>{{ job.rejected_count }}</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-box stat-viewed">
+                                <i class="bi bi-eye-fill"></i>
+                                <h6>Viewed</h6>
+                                <p>{{ job.viewed_count }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress -->
+                    {% if job.total_count > 0 %}
+                    <div class="progress">
+                        <div class="progress-bar bg-warning"
+                             style="width: {{ job.pending_count|percentage:job.total_count }}%">
+                        </div>
+                        <div class="progress-bar bg-success"
+                             style="width: {{ job.accepted_count|percentage:job.total_count }}%">
+                        </div>
+                        <div class="progress-bar bg-danger"
+                             style="width: {{ job.rejected_count|percentage:job.total_count }}%">
+                        </div>
+                        <div class="progress-bar bg-info"
+                             style="width: {{ job.viewed_count|percentage:job.total_count }}%">
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-light text-center rounded-pill shadow-sm py-2 mt-3">
+                        No applicants yet.
+                    </div>
+                    {% endif %}
+
+                </div>
+
+                <!-- Footer -->
+                <div class="card-footer bg-white border-0">
+                    <a href="{% url 'employer_view_applicants' job.id %}" 
+                       class="btn btn-outline-info btn-sm rounded-pill px-3">
+                        <i class="bi bi-eye"> View</i>
+                    </a>
+                    <a href="{% url 'employer_edit_job' job.id %}" 
+                       class="btn btn-outline-success btn-sm rounded-pill px-3">
+                        <i class="bi bi-pencil-square"> Edit</i>
+                    </a>
+                    <a href="{% url 'employer_delete_job' job.id %}" 
+                       class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                        <i class="bi bi-trash"> Delete</i>
+                    </a>
+                    <a href="{% url 'employer_accepted_applicants' job.id %}" 
+                       class="btn btn-success btn-sm rounded-pill px-3">
+                        <i class="bi bi-check-circle"> Shortlisted</i>
+                    </a>
+                    <a href="{% url 'employer_rejected_applicants' job.id %}" 
+                       class="btn btn-danger btn-sm rounded-pill px-3">
+                        <i class="bi bi-x-circle"> Rejected</i>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <i class="bi bi-briefcase display-4 text-primary mb-3"></i>
+        <h5 class="fw-semibold">You haven't posted any jobs yet</h5>
+        <p class="text-muted">Start hiring by posting your first job.</p>
+        <a href="{% url 'employer_post_job' %}" 
+           class="btn btn-primary rounded-pill px-4 mt-2">
+            Post Now
+        </a>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

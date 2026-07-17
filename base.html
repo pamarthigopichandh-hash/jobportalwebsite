@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HireHub | Job Portal</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <!-- aniamted -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+     <style>
+
+
+html, body {
+    overflow-x: hidden;
+}
+
+body {
+    padding-top: 50px;
+}
+
+
+
+
+
+      /* Navbar Background */
+.custom-navbar {
+    background: linear-gradient(135deg, #ffffff, #f8f9fa);
+    backdrop-filter: blur(10px);
+    transition: all 0.4s ease;
+}
+
+/* Brand Animation */
+.brand-logo {
+    color: #0d6efd;
+    transition: 0.3s ease;
+}
+
+.brand-logo span {
+    color: #111;
+}
+
+.brand-logo:hover {
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(13,110,253,0.4);
+}
+
+/* Animated Nav Links */
+.animated-link {
+    position: relative;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.animated-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 0%;
+    height: 2px;
+    background: #0d6efd;
+    transition: width 0.4s ease;
+}
+
+.animated-link:hover {
+    color: #0d6efd;
+}
+
+.animated-link:hover::after {
+    width: 100%;
+}
+
+/* Login Button */
+.btn-login {
+    border: 2px solid #0d6efd;
+    color: #0d6efd;
+    transition: all 0.3s ease;
+}
+
+.btn-login:hover {
+    background: #0d6efd;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(13,110,253,0.3);
+}
+
+/* Register Button */
+.btn-register {
+    background: linear-gradient(45deg, #0d6efd, #4f9cff);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-register:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(13,110,253,0.4);
+}
+
+/* Dropdown */
+.custom-dropdown {
+    border-radius: 12px;
+    border: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Dropdown Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+
+
+
+
+.company-section {
+    background: #fff;
+    padding: 25px 0;
+    overflow: hidden;
+    margin-top: 100px;
+}
+
+.company-marquee {
+    width: 100vw;
+    overflow: hidden;
+}
+
+.company-track {
+    display: flex;
+    gap: 60px;
+    align-items: center;
+    animation: companyScroll 10s linear infinite;
+}
+
+.company-track img {
+    height: 50px;
+    width: auto;
+    object-fit: contain;
+    
+    opacity: 8;
+    transition: all 0.1s ease;
+}
+
+.company-track img:hover {
+    filter: grayscale(60);
+    opacity: 100%;
+}
+
+@keyframes companyScroll {
+    from {
+        transform: translateX(10);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+/* animated */
+
+.animate-on-scroll {
+    opacity: 0;
+}
+
+
+    </style>
+</head>
+<body>
+
+<!-------------------------------------------- toaster messages -->
+<!-- ================= TOAST MESSAGES ================= -->
+
+{% if messages %}
+
+<div id="toast-container"
+     class="position-fixed top-25 start-50 translate-middle"
+     style="z-index:9999;">
+
+    {% for message in messages %}
+
+    <div class="toast text-white
+        {% if message.tags == 'success' %}
+            bg-success
+        {% elif message.tags == 'error' %}
+            bg-danger
+        {% elif message.tags == 'warning' %}
+            bg-warning
+        {% else %}
+            bg-info
+        {% endif %}
+        border-0 mb-2"
+        role="alert"
+        data-bs-delay="2000">
+
+        <div class="d-flex">
+            <div class="toast-body text-center">
+                {{ message }}
+            </div>
+
+            <button type="button"
+                class="btn-close btn-close-white me-2 m-auto"
+                data-bs-dismiss="toast">
+            </button>
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% endif %}
+<!-- 00000000000000000000000000000000000 -->
+
+<!-- Navbar -->
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg custom-navbar fixed-top shadow">
+  <div class="container">
+
+    <!-- Brand -->
+    <a class="navbar-brand fw-bold fs-4 brand-logo" href="{% url 'home' %}">
+      Hire<span>Hub</span>
+    </a>
+
+    <!-- Toggle -->
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Links -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto gap-lg-4">
+
+        <!-- Always show Home -->
+        <li class="nav-item">
+          <a href="{% url 'home' %}" class="nav-link animated-link"><i class="bi bi-house-fill"></i> Home</a>
+        </li>
+
+        {% if user.is_authenticated %}
+          {% if user.role == "employer" %}
+            <!-- Employer-specific links -->
+            <li class="nav-item">
+              <a href="{% url 'employer_post_job' %}" class="nav-link animated-link"><i class="bi bi-file-earmark-plus"></i> Post Job</a>
+            </li>
+          {% else %}
+            <!-- Jobseeker-specific links -->
+            <li class="nav-item">
+              <a href="{% url 'jobs' %}" class="nav-link animated-link"><i class="bi bi-mortarboard-fill"></i> Jobs</a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'applied_jobs' %}" class="nav-link animated-link"><i class="bi bi-person-workspace"></i> Applied Jobs</a>
+            </li>
+          {% endif %}
+
+          <!-- Username dropdown -->
+          <li class="nav-item dropdown animated-link">
+            <a class="nav-link dropdown-toggle fw-semibold " href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-person-circle animated-link"></i> {{ user.username }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              {% if user.role == "employer" %}
+                <li><a class="dropdown-item animated-link" href="{% url 'employer_profile' %}"><i class="bi bi-person-circle"></i> Profile</a></li>
+                <li><a class="dropdown-item animated-link" href="{% url 'employer_dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+              {% else %}
+                <li><a class="dropdown-item animated-link" href="{% url 'jobseeker_profile' %}"><i class="bi bi-person-circle"></i> Profile</a></li>
+                <li><a class="dropdown-item animated-link" href="{% url 'jobseeker_dashboard' %}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+              {% endif %}
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger fw-semibold" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+            </ul>
+          </li>
+        {% else %}
+          <!-- Guest links -->
+          <li class="nav-item">
+            <a href="{% url 'login' %}" class="btn btn-login px-4"><i class="bi bi-box-arrow-in-left"></i> Login</a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'register' %}" class="btn btn-register px-4"><i class="bi bi-person-add"></i> Register</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+    {% block body_block %}
+    {% endblock %}
+
+
+<!-- Footer -->
+<footer class="bg-dark text-light mt-5">
+  <div class="container py-4">
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <h5 class="text-uppercase">Job Portal</h5>
+        <p class="small">Find your dream job. Apply with confidence. Track applications and interviews in one place.</p>
+      </div>
+      <div class="col-md-4 mb-3">
+        <h5 class="text-uppercase">Quick Links</h5>
+        <ul class="list-unstyled">
+          <li><a href="{% url 'home' %}" class="text-light text-decoration-none animated-link">Home</a></li>
+          <li><a href="{% url 'jobs' %}" class="text-light text-decoration-none animated-link">Browse Jobs</a></li>
+
+          <li>
+            {% if user.is_authenticated %}
+                {% if user.role == "employer" %}
+                    <a href="{% url 'employer_dashboard' %}"  class="text-light text-decoration-none animated-link">Dashboard</a>
+                {% else %}
+                    <a href="{% url 'jobseeker_dashboard' %}" class="text-light text-decoration-none animated-link">Dashboard</a>
+                {% endif %}
+            {% endif %}
+
+        </li>
+          <li><a href="{% url 'applied_jobs' %}" class="text-light text-decoration-none animated-link">My Applications</a></li>
+          <li><a href="{% url 'logout' %}" class="text-light text-decoration-none animated-link">Logout</a></li>
+          <li><a href="{% url 'login' %}" class="text-light text-decoration-none animated-link"> Login</a></li>
+          <li><a href="{% url 'register' %}" class="text-light text-decoration-none animated-link">Register</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4 mb-3">
+        <h5 class="text-uppercase">Contact</h5>
+        <p class="small mb-1">📧 <a href="mailto:hirehub2003@gmail.com" class="text-decoration-none animated-link">hirehub2003@gmail.com</a></p>
+        <p class="small mb-1">📞 9848025555</p>
+        <p class="small">📍 India</p>
+      </div>
+    </div>
+    <hr class="border-secondary">
+    <div class="text-center small"><h5 id="year"> </h5>© Job Portal. All rights reserved.</div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
+
+
+
+<!------------------------------------------- JAVASCRIPT ------------------------------------------------>
+
+
+
+<!-- animate script -->
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("🔥 animation script loaded");
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const animation = entry.target.dataset.animate || 'fadeInUp';
+
+                entry.target.classList.add(
+                    'animate__animated',
+                    `animate__${animation}`
+                );
+
+                entry.target.style.opacity = 1;
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.animate-on-scroll').forEach(el => {
+        observer.observe(el);
+    });
+});
+
+
+function updateTime() {
+      const now = new Date();
+  document.getElementById('year').textContent =
+    now.toDateString();
+}
+
+setInterval(updateTime, 1000);
+updateTime();
+
+
+function updateDateTime() {
+      const now = new Date();
+  document.getElementById('date').textContent =
+  now.toDateString();
+}
+
+setInterval(updateDateTime, 1000);
+updateDateTime();
+
+</script>
+
+<!----------------+++++==================================== toaster -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    var toastElList =
+        [].slice.call(document.querySelectorAll('.toast'));
+
+    toastElList.map(function (toastEl) {
+
+        var toast = new bootstrap.Toast(
+            toastEl,
+            {
+                delay: 2000,      // ✅ 2 seconds
+                autohide: true
+            }
+        );
+
+        toast.show();
+    });
+
+});
+</script>
+
+</body>
+</html>

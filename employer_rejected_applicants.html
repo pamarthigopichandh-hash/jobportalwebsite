@@ -1,0 +1,19 @@
+{% extends 'jobapp/base.html' %}
+
+{% block body_block %}
+<div class="container py-5">
+    <h2 class="fw-bold text-danger">❌ Rejected Applicants for {{ job.title }}</h2>
+    {% if applicants %}
+        <ul class="list-group mt-3">
+            {% for applicant in applicants %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ applicant.user.get_full_name }} ({{ applicant.user.email }})
+                <span class="badge bg-danger">Rejected</span>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-info mt-3">No rejected applicants yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+{% extends 'jobapp/base.html' %}
+{% load widget_tweaks %}
+
+{% block body_block %}
+
+<div class="container min-vh-100 d-flex justify-content-center align-items-center">
+    <div class="row w-100 justify-content-center">
+        <div class="col-md-4">
+
+            <div class="card shadow-lg border-0 rounded-4">
+
+                <!-- Header -->
+                <div class="card-header text-center text-white rounded-top-4"
+                     style="background: linear-gradient(135deg, #0d6efd, #6610f2);">
+                    <h3 class="fw-bold mb-0">Create Account</h3>
+                    <small class="opacity-75">Join our platform</small>
+                </div>
+
+                <!-- Body -->
+                <div class="card-body p-4">
+
+                   <form method="post">
+                        {% csrf_token %}
+ 
+
+                       <!-- Username -->
+                      <div class="form-floating mb-3">
+                         {{ form.username|add_class:"form-control"|attr:"placeholder:Username" }}
+                             <label class="text-muted">Username</label>
+                        </div>
+                        <div class="text-danger small">
+                             {{ form.username.errors }}
+                        </div>
+
+
+                        <!-- Email -->
+                        <div class="form-floating mb-3">
+                            {{ form.email|add_class:"form-control"|attr:"placeholder:Email" }}
+                            <label class="text-muted">Email address</label>
+                        </div>
+
+                        <!-- Role -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-muted">Select Role</label>
+                            {{ form.role|add_class:"form-select" }}
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-floating mb-3">
+                            {{ form.password1|add_class:"form-control"|attr:"placeholder:Password" }}
+                             <label class="text-muted">Password</label>
+                        </div>
+                        <div class="text-danger small">
+                          {{ form.password1.errors }}
+                        </div>
+
+
+                        <!-- Confirm Password -->
+                        <div class="form-floating mb-4">
+                        {{ form.password2|add_class:"form-control"|attr:"placeholder:Confirm Password" }}
+                         <label class="text-muted">Confirm Password</label>
+                        </div>
+                        <div class="text-danger small">
+                          {{ form.password2.errors }}
+                        </div>
+
+
+                        <!-- Submit -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg rounded-3">
+                                Register
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

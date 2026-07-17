@@ -1,0 +1,179 @@
+{% extends 'jobapp/base.html' %}
+{% block body_block %}
+
+<style>
+.card:hover{
+    transform:translateY(-10px);
+    transition:0.2s ease-in-out;
+}
+body{
+    padding-top:150px;
+}
+</style>
+
+
+<!-- ================= LOADER ================= -->
+
+<div id="loader" style="display:none;text-align:center">
+    <div class="spinner-border text-success"></div>
+</div>
+
+
+<!-- ================= SEARCH SECTION ================= -->
+
+<div class="container mt-4">
+
+{% if user.is_authenticated %}
+<form method="get" class="row g-3 align-items-end">
+
+<div class="col-md-3">
+<label>Job Title</label>
+<input type="text"
+name="title"
+class="form-control"
+value="{{ request.GET.title }}">
+</div>
+
+<div class="col-md-3">
+<label>Location</label>
+<input type="text"
+name="location"
+class="form-control"
+value="{{ request.GET.location }}">
+</div>
+
+<div class="col-md-2">
+<label>Category</label>
+<select name="category" class="form-select">
+<option value="All">All</option>
+<option value="IT">IT</option>
+<option value="NON-IT">NON-IT</option>
+</select>
+</div>
+
+<div class="col-md-2">
+<label>Job Type</label>
+<select name="job_type" class="form-select">
+<option value="All">All</option>
+<option value="Full Time">Full Time</option>
+<option value="Part Time">Part Time</option>
+<option value="Internship">Internship</option>
+</select>
+</div>
+
+<div class="col-md-2 d-grid">
+<button class="btn btn-success">
+Search Jobs
+</button>
+</div>
+
+</form>
+{% endif %}
+
+</div>
+
+
+
+<!-- ================= MAIN CONTENT ================= -->
+
+<div class="container mt-5">
+<div class="row">
+
+<!-- ========= SIDEBAR ========= -->
+
+<div class="col-md-3" id="filter-area">
+{% include "jobapp/filter_counts.html" %}
+</div>
+
+
+
+<!-- ========= JOB SECTION ========= -->
+
+<div class="col-md-9">
+
+<div id="job-container" class="row g-4">
+{% include "jobapp/job_cards.html" %}
+</div>
+
+<div id="pagination-area" class="mt-4">
+{% include "jobapp/pagination.html" %}
+</div>
+
+</div>
+
+</div>
+</div>
+
+
+
+<!-- ================= FINAL AJAX ENGINE ================= -->
+
+<script>
+
+function loadJobs(page=1){
+
+document.getElementById("loader").style.display="block";
+
+let locations=[];
+let jobtypes=[];
+
+document.querySelectorAll(
+"input[name='location']:checked"
+).forEach(el=>locations.push(el.value));
+
+document.querySelectorAll(
+"input[name='job_type']:checked"
+).forEach(el=>jobtypes.push(el.value));
+
+
+fetch("/jobs/ajax/filter/?"+
+new URLSearchParams({
+location:locations,
+job_type:jobtypes,
+page:page
+}))
+.then(res=>res.json())
+.then(data=>{
+
+document.getElementById("loader").style.display="none";
+
+document.getElementById("job-container")
+.innerHTML=data.jobs;
+
+document.getElementById("filter-area")
+.innerHTML=data.filters;
+
+document.getElementById("pagination-area")
+.innerHTML=data.pagination;
+
+attachEvents();
+
+});
+
+}
+
+
+
+function attachEvents(){
+
+/* FILTER CHANGE */
+document.querySelectorAll(".filter")
+.forEach(el=>{
+el.onchange=()=>loadJobs();
+});
+
+/* PAGINATION CLICK */
+document.querySelectorAll(".page-btn")
+.forEach(btn=>{
+btn.onclick=function(){
+loadJobs(this.dataset.page);
+};
+});
+
+}
+
+attachEvents();
+
+</script>
+
+{% endblock %}

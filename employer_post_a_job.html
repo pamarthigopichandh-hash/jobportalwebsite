@@ -1,0 +1,150 @@
+{% extends 'jobapp/base.html' %}
+{% load widget_tweaks %}
+
+{% block body_block %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <!-- Header -->
+                <div class="card-header bg-gradient bg-danger text-white text-center py-4">
+                    <h2 class="fw-bold mb-0">Post a New Job</h2>
+                    <p class="mb-0 small">Fill out the details below to create a job listing</p>
+                </div>
+
+                <!-- Body -->
+                <div class="card-body p-4">
+                    <!-- IMPORTANT: enctype added for file upload -->
+                    <form method="POST"  action="{% url 'employer_post_job' %}" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Job Title -->
+                        <div class="mb-3">
+                            <label for="id_title" class="form-label fw-bold">
+                                Job Title {% if form.title.field.required %}<span class="text-danger">*</span>{% endif %}
+                            </label>
+                            {{ form.title|add_class:"form-control"|attr:"placeholder:Enter Job Title" }}
+                        </div>
+
+                        <!-- Company -->
+                        <div class="mb-3">
+                            <label for="id_company" class="form-label fw-bold">
+                                Company {% if form.company.field.required %}<span class="text-danger">*</span>{% endif %}
+                            </label>
+                            {{ form.company|add_class:"form-control"|attr:"placeholder:Enter Company Name" }}
+                        </div>
+
+                        <!-- Location & Salary -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_location" class="form-label fw-bold">
+                                    Location {% if form.location.field.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                {{ form.location|add_class:"form-control"|attr:"placeholder:Enter Location" }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_salary" class="form-label fw-bold">
+                                    Salary {% if form.salary.field.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                {{ form.salary|add_class:"form-control"|attr:"placeholder:Enter Salary" }}
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label for="id_description" class="form-label fw-bold">
+                                Job Description {% if form.description.field.required %}<span class="text-danger">*</span>{% endif %}
+                            </label>
+                            {{ form.description|add_class:"form-control"|attr:"placeholder:Describe the job" }}
+                        </div>
+
+                        <!-- Skill Set (ATS) -->
+                        <div class="mb-3">
+                            <label for="id_skills_required" class="form-label fw-bold">
+                                Required Skills (ATS) {% if form.skills_required.field.required %}<span class="text-danger">*</span>{% endif %}
+                            </label>
+                            {{ form.skills_required|add_class:"form-control"|attr:"placeholder:Enter comma-separated skills (e.g. python, django, sql, rest api)" }}
+                            <small class="text-muted">These skills will be used for ATS scoring when applicants apply.</small>
+                        </div>
+
+                        <!-- work mode fields -->
+
+                        <div class="mb-3">
+                            <label>Work Mode</label>
+                                <select name="work_mode" class="form-control" required>
+                                    <option value="">Select</option>
+                                    <option value="Remote">Remote</option>
+                                    <option value="Onsite">Onsite</option>
+                                    <option value="Hybrid">Hybrid</option>
+                                </select>
+                        </div>
+
+                        <!-- Category & Job Type -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_category" class="form-label fw-bold">
+                                    Category {% if form.category.field.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                {{ form.category|add_class:"form-select" }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_job_type" class="form-label fw-bold">
+                                    Job Type {% if form.job_type.field.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                {{ form.job_type|add_class:"form-select" }}
+                            </div>
+                        </div>
+
+                        <!-- Deadline -->
+                        <div class="mb-4">
+                            <label for="id_deadline" class="form-label fw-bold">
+                                Deadline {% if form.deadline.field.required %}<span class="text-danger">*</span>{% endif %}
+                            </label>
+                            {{ form.deadline|add_class:"form-control"|attr:"min:"|attr:today }}
+                        </div>
+
+                        <!-- Exam File Upload -->
+                        <div class="mb-4">
+                            <label for="id_exam_file" class="form-label fw-bold">
+                                Exam Question File (PDF/DOCX)
+                            </label>
+                            {{ form.exam_file|add_class:"form-control" }}
+                            <small class="text-muted">Upload a PDF or DOCX file containing exam questions for applicants.</small>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-danger btn-lg fw-bold shadow-sm">
+                                <i class="bi bi-plus-circle me-2"></i> Post Job
+                            </button>
+                        </div>
+
+                        <!-- Back to Dashboard -->
+                        <div class="text-center">
+                            <a href="{% url 'employer_dashboard' %}" class="btn btn-outline-secondary fw-bold">
+                                <i class="bi bi-arrow-left-circle me-2"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Footer -->
+                <div class="card-footer text-center text-muted small py-2">
+                    Your job will be visible to seekers immediately after posting.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS fallback for deadline -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const deadlineInput = document.getElementById("id_deadline");
+    if (deadlineInput) {
+      const today = new Date().toISOString().split("T")[0];
+      deadlineInput.setAttribute("min", today);
+    }
+  });
+</script>
+{% endblock %}

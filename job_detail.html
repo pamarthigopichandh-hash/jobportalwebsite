@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ job.title }} | Job Details</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .job-title { font-size: 28px; font-weight: 600; }
+        .company-name { color: #736c7d; }
+        .apply-btn { background: #4a3fc6; color: #fff; }
+        .apply-btn:hover { background: #5405ff; }
+        .section-title { color: #413fc6; font-weight: 600; margin-top: 30px; }
+        .job-summary-box {
+            border: 1px solid #eee;
+            padding: 20px;
+            border-radius: 6px;
+            background: #fff;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container my-5">
+    <div class="row">
+
+        <!-- LEFT CONTENT -->
+        <div class="col-md-8">
+            <div class="bg-white p-4 rounded shadow-sm">
+
+                <h1 class="job-title">{{ job.title }}</h1>
+                <p class="company-name">
+                    {{ job.company }} · {{ job.location }} · {{ job.job_type }}
+                </p>
+
+                <hr>
+
+                <h5 class="section-title">Job Description</h5>
+                <p>{{ job.description }}</p>
+
+                <h5 class="section-title">Responsibilities</h5>
+                <ul>
+                    {% for item in job.responsibilities.all %}
+                        <li>{{ item.text }}</li>
+                    {% endfor %}
+                </ul>
+
+                <h5 class="section-title">Requirements</h5>
+                <ul>
+                    {% for item in job.requirements.all %}
+                        <li>{{ item.text }}</li>
+                    {% endfor %}
+                </ul>
+
+                <h5 class="section-title">Benefits</h5>
+                <ul>
+                    {% for item in job.benefits.all %}
+                        <li>{{ item.text }}</li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+        </div>
+
+        <!-- RIGHT SIDEBAR -->
+        <div class="col-md-4">
+            <div class="job-summary-box shadow-sm">
+
+                <h5 class="section-title">Job Summary</h5>
+
+                <p><strong>Location:</strong> {{ job.location }}</p>
+                <p><strong>Type:</strong> {{ job.job_type }}</p>
+                <p><strong>Salary:</strong> {{ job.salary }}</p>
+                <p><strong>Deadline:</strong> {{ job.deadline }}</p>
+
+                <a href="{% url 'jobs' %}" class="btn btn-outline-primary w-100 mt-3">
+                    Browse Jobs
+                </a>
+
+                {% if already_applied %}
+                    <button class="btn btn-secondary w-100 mt-3" disabled>
+                        Already Applied
+                    </button>
+                {% else %}
+                    <a href="{% url 'apply_job' job.id %}" class="btn apply-btn w-100 mt-3">
+                        Apply Now
+                    </a>
+                {% endif %}
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- POPUP MODAL -->
+<div class="modal fade" id="alreadyAppliedModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Already Applied</h5>
+      </div>
+
+      <div class="modal-body">
+        <p>You have already applied for this job.</p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="okBtn" class="btn btn-primary">OK</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const alreadyApplied = "{{ already_applied }}";
+
+        if (alreadyApplied === "True") {
+            const modal = new bootstrap.Modal(
+                document.getElementById('alreadyAppliedModal')
+            );
+            modal.show();
+
+            document.getElementById("okBtn").onclick = function () {
+                window.location.href = "{% url 'jobs' %}";
+            };
+        }
+    });
+</script>
+
+</body>
+</html>

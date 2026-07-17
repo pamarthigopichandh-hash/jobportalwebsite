@@ -1,0 +1,25 @@
+<h5>Location</h5>
+
+{% for loc in location_counts %}
+<label>
+<input type="checkbox"
+class="filter"
+name="location"
+value="{{ loc.location }}">
+{{ loc.location }} ({{ loc.total }})
+</label><br>
+{% endfor %}
+
+<hr>
+
+<h5>Job Type</h5>
+
+{% for t in type_counts %}
+<label>
+<input type="checkbox"
+class="filter"
+name="job_type"
+value="{{ t.job_type }}">
+{{ t.job_type }} ({{ t.total }})
+</label><br>
+{% endfor %}

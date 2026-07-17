@@ -1,0 +1,22 @@
+{% extends 'jobapp/base.html' %}
+{% block body_block %}
+
+<div class="container mt-5">
+  <h3 class="mb-4">Exam Completed: {{ application.job.title }}</h3>
+
+  <div class="card p-4 shadow-sm">
+    <p><strong>Total Questions:</strong> {{ total }}</p>
+    <p><strong>Your Score:</strong> {{ score }} / {{ total }}</p>
+    <p><strong>Status:</strong> {{ status }}</p>
+
+    {% if score >= passing_marks %}
+      <p class="text-success"><strong>Congratulations! You Passed.</strong></p>
+    {% else %}
+      <p class="text-danger"><strong>Unfortunately, You Failed.</strong></p>
+    {% endif %}
+  </div>
+
+  <a href="{% url 'applied_jobs' %}" class="btn btn-secondary mt-3">Back to Applications</a>
+</div>
+
+{% endblock %}

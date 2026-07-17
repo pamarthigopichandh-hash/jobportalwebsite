@@ -1,0 +1,198 @@
+{% extends "jobapp/base.html" %}
+{% load static %}
+
+{% block body_block %}
+
+<div class="container mt-5">
+
+<!-- ================= PROFILE HEADER ================= -->
+<div class="card shadow mb-4">
+
+    <!-- COVER -->
+    <div style="
+        height:220px;
+        background:url('{% static 'jobapp/profile_banner.jpg' %}')
+        center/cover;">
+    </div>
+
+    <div class="card-body text-center">
+
+        <!-- PROFILE IMAGE -->
+        <img src="{% if profile.profile_photo %}
+                    {{ profile.profile_photo.url }}
+                  {% else %}
+                    {% static 'jobapp/default_profile.png' %}
+                  {% endif %}"
+             class="rounded-circle border"
+             style="width:140px;height:140px;
+                    margin-top:-80px;
+                    object-fit:cover;">
+
+        <h4 class="mt-3">
+            {{ profile.full_name|default:"Your Name" }}
+        </h4>
+
+        <p class="text-muted">
+            {{ profile.headline|default:"Add headline" }}
+        </p>
+
+        {% if not edit_mode %}
+        <a href="?edit=1" class="btn btn-outline-warning">
+            Edit Profile
+        </a>
+        {% endif %}
+
+    </div>
+</div>
+
+
+<!-- ================= EDIT PROFILE ================= -->
+{% if edit_mode %}
+
+<div class="card shadow p-4 mb-4">
+
+<h5>Edit Profile</h5>
+
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+<label>Profile Photo</label>
+{{ form.profile_photo }}
+</div>
+
+<div class="col-md-6 mb-3">
+<label>Full Name</label>
+{{ form.full_name }}
+</div>
+
+<div class="col-md-6 mb-3">
+<label>Headline</label>
+{{ form.headline }}
+</div>
+
+<div class="col-md-6 mb-3">
+<label>Phone</label>
+{{ form.phone }}
+</div>
+
+<div class="col-md-6 mb-3">
+<label>Date of Birth</label>
+{{ form.date_of_birth }}
+</div>
+
+<div class="col-md-6 mb-3">
+<label>Gender</label>
+{{ form.gender }}
+</div>
+
+<div class="col-md-6 mb-3">
+<label>Qualification</label>
+{{ form.qualification }}
+</div>
+
+<div class="col-12 mb-3">
+<label>Skills</label>
+{{ form.skills }}
+</div>
+
+<div class="col-12 mb-3">
+<label>About</label>
+{{ form.about }}
+</div>
+
+</div>
+
+<button type="submit" class="btn btn-primary">
+Save Profile
+</button>
+
+<a href="{% url 'jobseeker_profile' %}"
+   class="btn btn-secondary">
+Cancel
+</a>
+
+</form>
+
+</div>
+
+{% else %}
+
+<!-- ================= ABOUT ================= -->
+<div class="card shadow p-4 mb-4">
+<h5>About</h5>
+<p>
+{{ profile.about|default:"No description added yet." }}
+</p>
+</div>
+
+
+<!-- ================= SKILLS ================= -->
+<div class="card shadow p-4 mb-4">
+<h5>Skills</h5>
+
+{% if profile.skills %}
+    {% for skill in profile.skills.split %}
+        <span class="badge bg-secondary m-1">
+            {{ skill }}
+        </span>
+    {% endfor %}
+{% else %}
+<p>No skills added</p>
+{% endif %}
+
+</div>
+
+
+<!-- ================= EXPERIENCE ================= -->
+<div class="card shadow p-4 mb-4">
+<h5>Experience</h5>
+
+{% for exp in experiences %}
+<div class="mb-3">
+<strong>{{ exp.role }}</strong><br>
+{{ exp.company }}<br>
+
+<small>
+{{ exp.start_date }} -
+{{ exp.end_date|default:"Present" }}
+</small>
+</div>
+{% empty %}
+<p>No experience added</p>
+{% endfor %}
+
+</div>
+
+
+<!-- ================= EDUCATION ================= -->
+<div class="card shadow p-4 mb-4">
+<h5>Education</h5>
+
+{% for edu in educations %}
+<div class="mb-3">
+<strong>{{ edu.degree }}</strong><br>
+{{ edu.institution }} ({{ edu.year }})
+</div>
+{% empty %}
+<p>No education added</p>
+{% endfor %}
+
+</div>
+
+
+<!-- ================= RESUME ================= -->
+{% if profile.resume %}
+<a href="{{ profile.resume.url }}"
+   class="btn btn-success">
+Download Resume
+</a>
+{% endif %}
+
+{% endif %}
+
+</div>
+
+{% endblock %}

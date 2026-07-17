@@ -1,0 +1,152 @@
+{% extends 'jobapp/base.html' %}
+{% load static %}
+
+{% block body_block %}
+
+<style>
+.exam-container {
+    margin-top: 80px;
+}
+.card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.card-header {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+.instructions {
+    background: #f8f9fa;
+    border-left: 4px solid #007bff;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+}
+</style>
+
+<div class="container exam-container">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            Exam for {{ application.job.title }}
+        </div>
+
+        <div class="card-body">
+            <h5 class="mb-3">Candidate: {{ application.full_name }}</h5>
+
+            {% if application.exam_completed %}
+
+                <div class="alert alert-success">
+                    <h5>✅ Your exam is already completed.</h5>
+                    <p><strong>Score:</strong> {{ application.exam_score }}</p>
+                    <p><strong>Status:</strong> {{ application.status }}</p>
+
+                    {% if application.status == "Accepted" %}
+                        <span class="badge bg-success">Passed</span>
+                    {% else %}
+                        <span class="badge bg-danger">Failed</span>
+                    {% endif %}
+                </div>
+
+            {% else %}
+
+                <div class="instructions">
+                    <h6>Exam Instructions:</h6>
+                    <ul>
+                        <li>Do not switch tabs or minimize the browser during the exam.</li>
+                        <li>Copy, paste, and right-click are disabled.</li>
+                        <li>Your webcam must clearly show your face.</li>
+                        <li>Multiple faces or suspicious activity will disqualify you.</li>
+                        <li>The exam can only start after face verification.</li>
+                    </ul>
+                </div>
+
+                <!-- START BUTTON (DISABLED INITIALLY) -->
+                <a href="{% url 'take_exam' application.exam_token %}" 
+                   id="startBtn"
+                   class="btn btn-success btn-lg disabled"
+                   style="pointer-events: none; opacity: 0.6;">
+                    <i class="bi bi-play-circle"></i> Start Exam
+                </a>
+
+                <!-- WEBCAM PREVIEW -->
+                <div class="mt-4">
+                    <h6>Webcam Preview:</h6>
+                    <video id="examCamera" autoplay playsinline width="320" height="240"></video>
+                    <p id="faceStatus" class="mt-2 text-danger">
+                        Waiting for face detection...
+                    </p>
+                </div>
+
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% if not application.exam_completed %}
+<!-- TensorFlow + Face API -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.7.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+<script>
+async function startExamSecurity() {
+
+    const video = document.getElementById("examCamera");
+    const startBtn = document.getElementById("startBtn");
+    const faceStatus = document.getElementById("faceStatus");
+
+    if (!video || !startBtn || !faceStatus) return;
+
+    // Start webcam
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+    } catch (err) {
+        alert("Webcam access required!");
+        return;
+    }
+
+    // Load model
+    try {
+        await faceapi.nets.tinyFaceDetector.loadFromUri(
+            "https://justadudewhohacks.github.io/face-api.js/models"
+        );
+        console.log("Model Loaded ✅");
+    } catch (err) {
+        console.error("Model load error:", err);
+        faceStatus.textContent = "Model failed to load.";
+        return;
+    }
+
+    // Detect face every second
+    setInterval(async () => {
+        try {
+            const detection = await faceapi.detectSingleFace(
+                video,
+                new faceapi.TinyFaceDetectorOptions()
+            );
+
+            if (detection) {
+                faceStatus.textContent = "✅ Face detected. You can start.";
+                faceStatus.className = "text-success";
+
+                startBtn.classList.remove("disabled");
+                startBtn.style.pointerEvents = "auto";
+                startBtn.style.opacity = "1";
+            } else {
+                faceStatus.textContent = "❌ No face detected.";
+                faceStatus.className = "text-danger";
+
+                startBtn.classList.add("disabled");
+                startBtn.style.pointerEvents = "none";
+                startBtn.style.opacity = "0.6";
+            }
+
+        } catch (error) {
+            console.error("Detection error:", error);
+        }
+    }, 1000);
+}
+
+startExamSecurity();
+</script>
+{% endif %}
+{% endblock %}

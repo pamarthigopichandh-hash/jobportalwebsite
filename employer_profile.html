@@ -1,0 +1,259 @@
+{% extends "jobapp/base.html" %}
+{% load static %}
+{% block body_block %}
+
+<style>
+
+/* ================= HEADER ================= */
+
+.profile-header{
+    position:relative;
+    margin-bottom:120px;
+}
+
+/* ================= COVER ================= */
+
+.cover-container{
+    width:100%;
+    height:450px;
+    border-radius:12px;
+    overflow:hidden;
+    background:#ddd;
+}
+
+.cover-container img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* ================= COMPANY LOGO ================= */
+
+.company-logo-wrapper{
+    position:absolute;
+    bottom:-70px;
+    left:40px;
+}
+
+.company-logo{
+    width:150px;
+    height:150px;
+    border-radius:12px;
+    object-fit:cover;
+    border:6px solid white;
+    background:white;
+    box-shadow:0 4px 15px rgba(0,0,0,0.25);
+}
+
+/* ================= COMPANY INFO ROW ================= */
+
+.company-section{
+    padding-left:210px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+}
+
+.company-name{
+    font-weight:600;
+}
+
+/* ================= EMPLOYER PROFILE ================= */
+
+.employer-pic{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    object-fit:cover;
+    border:3px solid white;
+    box-shadow:0 2px 8px rgba(0,0,0,0.25);
+}
+
+/* ================= CARDS ================= */
+
+.card-box{
+    border:none;
+    border-radius:12px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.08);
+}
+
+.info-label{
+    font-weight:600;
+    color:#555;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:768px){
+
+.company-logo-wrapper{
+    left:50%;
+    transform:translateX(-50%);
+}
+
+.company-section{
+    text-align:center;
+    padding-left:0;
+    margin-top:80px;
+    flex-direction:column;
+    gap:15px;
+}
+
+.cover-container{
+    height:220px;
+}
+
+.company-logo{
+    width:120px;
+    height:120px;
+}
+
+}
+
+</style>
+
+
+<div class="container mt-4">
+
+<!-- ================= HEADER ================= -->
+
+<div class="profile-header">
+
+    <!-- COVER IMAGE -->
+    <div class="cover-container">
+        <img src="{% if profile.cover_image %}
+            {{ profile.cover_image.url }}
+        {% else %}
+            {% static 'images/company_cover.jpg' %}
+        {% endif %}">
+    </div>
+
+    <!-- COMPANY LOGO -->
+    <div class="company-logo-wrapper">
+        <img src="{% if profile.logo %}
+            {{ profile.logo.url }}
+        {% else %}
+            {% static 'images/company.png' %}
+        {% endif %}"
+        class="company-logo">
+    </div>
+
+</div>
+
+
+<!-- ================= COMPANY INFO ================= -->
+
+<div class="company-section">
+
+    <!-- LEFT INFO -->
+    <div>
+        <h3 class="company-name">
+            {{ profile.company_name|default:"Company Name" }}
+        </h3>
+
+        <p class="text-muted">
+            {{ profile.tagline|default:"Add company tagline" }}
+        </p>
+
+        <a href="{% url 'edit_employer_profile' %}"
+           class="btn btn-primary btn-sm">
+            Edit Profile
+        </a>
+    </div>
+
+    <!-- EMPLOYER PROFILE PIC -->
+    <div>
+        <img src="{% if user_profile.profile_pic %}
+            {{ user_profile.profile_pic.url }}
+        {% else %}
+            {% static 'images/user.png' %}
+        {% endif %}"
+        class="employer-pic">
+    </div>
+
+</div>
+
+
+<!-- ================= MAIN SECTION ================= -->
+
+<div class="row mt-4">
+
+<!-- LEFT -->
+<div class="col-md-8">
+
+<div class="card card-box p-4 mb-3">
+<h5>Company Overview</h5>
+<p>{{ profile.description|default:"No company description added yet." }}</p>
+</div>
+
+<div class="card card-box p-4">
+<h5>Company Details</h5>
+
+<p><span class="info-label">Industry:</span>
+{{ profile.industry|default:"Not specified" }}</p>
+
+<p><span class="info-label">Company Size:</span>
+{{ profile.company_size|default:"Not specified" }}</p>
+
+<p><span class="info-label">Founded:</span>
+{{ profile.founded_year|default:"Not specified" }}</p>
+
+<p><span class="info-label">Website:</span>
+{% if profile.website %}
+<a href="{{ profile.website }}" target="_blank">
+{{ profile.website }}
+</a>
+{% else %}
+Not Added
+{% endif %}
+</p>
+
+</div>
+
+</div>
+
+
+<!-- RIGHT -->
+<div class="col-md-4">
+
+<div class="card card-box p-4 mb-3">
+<h5>Company Info</h5>
+
+<p><b>Email</b><br>
+{{ profile.contact_email|default:"Not Added" }}</p>
+
+<p><b>Location</b><br>
+{{ profile.location|default:"Not Added" }}</p>
+
+</div>
+
+
+<div class="card card-box p-4">
+<h5>Social Links</h5>
+
+{% if profile.linkedin %}
+<a href="{{ profile.linkedin }}" target="_blank" class="text-decoration-none"><i class="bi bi-linkedin"> &nbsp;</i>LinkedIn</a><br>
+{% endif %}
+
+{% if profile.twitter %}
+<a href="{{ profile.twitter }}" target="_blank" class="text-decoration-none"><i class="bi bi-twitter-x">&nbsp;</i>Twitter</a><br>
+{% endif %}
+
+{% if profile.facebook %}
+<a href="{{ profile.facebook }}" target="_blank" class="text-decoration-none"><i class="bi bi-facebook">&nbsp;</i>Facebook</a>
+{% endif %}
+
+{% if not profile.linkedin and not profile.twitter and not profile.facebook %}
+<p>No social links added.</p>
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

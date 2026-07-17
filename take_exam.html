@@ -1,0 +1,261 @@
+{% extends 'jobapp/base.html' %}
+{% block body_block %}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-primary text-white">
+            Exam for {{ application.job.title }}
+        </div>
+
+        <div class="card-body">
+
+            <!-- TIMER -->
+            <div class="alert alert-warning text-center">
+                ⏳ Time Remaining:
+                <strong><span id="examTimer">30:00</span></strong>
+            </div>
+
+            <!-- WARNING DISPLAY -->
+            <div class="alert alert-danger text-center" id="warningBox" style="display:none;">
+                ⚠ Face Warning Count:
+                <strong><span id="warningCount">0</span></strong>
+            </div>
+
+            <form method="post" id="examForm">
+                {% csrf_token %}
+
+                {% for question in questions %}
+                    <div class="mb-3">
+                        <p class="fw-bold">{{ question.text }}</p>
+                        {% for option in question.options.all %}
+                            <div class="form-check">
+                                <input type="radio"
+                                       name="q{{ question.id }}"
+                                       value="{{ option.id }}"
+                                       class="form-check-input"
+                                       required>
+                                <label class="form-check-label">
+                                    {{ option.text }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-success">
+                    Submit Exam
+                </button>
+            </form>
+
+            <hr>
+
+            <!-- Webcam -->
+            <video id="examCamera" autoplay playsinline width="320" height="240"></video>
+
+        </div>
+    </div>
+</div>
+
+<!-- TensorFlow + Face API -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.7.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+<script>
+let examStarted = false;
+let violationCount = 0;
+const MAX_VIOLATIONS = 5;   // warning only
+let examTerminated = false;
+
+const form = document.getElementById("examForm");
+const TOTAL_TIME = 30 * 60; // 30 minutes
+
+// ==========================
+// AUTO SUBMIT FUNCTION
+// ==========================
+function autoSubmitExam(reason) {
+    if (examTerminated) return;
+
+    examTerminated = true;
+    alert(reason + " Exam is being submitted automatically.");
+
+    sessionStorage.removeItem("exam_active");
+    sessionStorage.removeItem("exam_start_time");
+
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "auto_submitted";
+    input.value = "true";
+    form.appendChild(input);
+
+    form.submit();
+}
+
+// ==========================
+// RELOAD DETECTION
+// ==========================
+if (sessionStorage.getItem("exam_active")) {
+    autoSubmitExam("Page refresh detected.");
+}
+sessionStorage.setItem("exam_active", "true");
+
+// ==========================
+// TIMER SYSTEM (30 MINUTES)
+// ==========================
+function startTimer() {
+
+    const timerElement = document.getElementById("examTimer");
+
+    let startTime = sessionStorage.getItem("exam_start_time");
+
+    if (!startTime) {
+        startTime = Date.now();
+        sessionStorage.setItem("exam_start_time", startTime);
+    }
+
+    const timerInterval = setInterval(function() {
+
+        const now = Date.now();
+        const elapsed = Math.floor((now - startTime) / 1000);
+        const remaining = TOTAL_TIME - elapsed;
+
+        if (remaining <= 0) {
+            clearInterval(timerInterval);
+            autoSubmitExam("Time is up!");
+            return;
+        }
+
+        const minutes = Math.floor(remaining / 60);
+        const seconds = remaining % 60;
+
+        timerElement.textContent =
+            String(minutes).padStart(2, '0') + ":" +
+            String(seconds).padStart(2, '0');
+
+    }, 1000);
+}
+
+// ==========================
+// FACE WARNING SYSTEM ONLY
+// ==========================
+function showWarning(message) {
+
+    violationCount++;
+
+    document.getElementById("warningBox").style.display = "block";
+    document.getElementById("warningCount").textContent = violationCount;
+
+    alert(message + " (Warning only)");
+
+    if (violationCount >= MAX_VIOLATIONS) {
+        alert("Maximum warnings reached. Please focus on the exam.");
+        violationCount = 0; // reset if you want continuous warnings
+    }
+}
+
+// ==========================
+// START CAMERA + FACE MODEL
+// ==========================
+async function startExamSecurity() {
+
+    const video = document.getElementById("examCamera");
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+    } catch (err) {
+        autoSubmitExam("Webcam access denied.");
+        return;
+    }
+
+    await faceapi.nets.tinyFaceDetector.loadFromUri(
+        "https://justadudewhohacks.github.io/face-api.js/models"
+    );
+
+    const waitForFace = setInterval(async () => {
+
+        const detections = await faceapi.detectAllFaces(
+            video,
+            new faceapi.TinyFaceDetectorOptions()
+        );
+
+        if (detections.length === 1) {
+            examStarted = true;
+            clearInterval(waitForFace);
+            startMonitoring();
+            startTimer();
+        }
+
+    }, 1000);
+}
+
+// ==========================
+// MONITORING LOOP
+// ==========================
+function startMonitoring() {
+
+    const video = document.getElementById("examCamera");
+
+    setInterval(async () => {
+
+        if (!examStarted || examTerminated) return;
+
+        const detections = await faceapi.detectAllFaces(
+            video,
+            new faceapi.TinyFaceDetectorOptions()
+        );
+
+        if (detections.length === 0) {
+            showWarning("Face not visible!");
+        }
+
+        if (detections.length > 1) {
+            showWarning("Multiple faces detected!");
+        }
+
+    }, 3000);
+}
+
+// ==========================
+// TAB SWITCH
+// ==========================
+document.addEventListener("visibilitychange", function() {
+    if (examStarted && document.hidden) {
+        autoSubmitExam("Tab switching detected.");
+    }
+});
+
+// ==========================
+// REFRESH + DEVTOOLS
+// ==========================
+document.addEventListener("keydown", function(e) {
+
+    if (e.key === "F5" ||
+        (e.ctrlKey && e.key === "r")) {
+        e.preventDefault();
+        autoSubmitExam("Refresh attempt detected.");
+    }
+
+    if (e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && e.key === "I") ||
+        (e.ctrlKey && e.key === "u")) {
+        e.preventDefault();
+        autoSubmitExam("Developer tools detected.");
+    }
+});
+
+// ==========================
+// CLOSE TAB
+// ==========================
+window.addEventListener("beforeunload", function (e) {
+    if (examStarted && !examTerminated) {
+        autoSubmitExam("Page closed.");
+    }
+});
+
+// ==========================
+startExamSecurity();
+
+</script>
+
+{% endblock %}

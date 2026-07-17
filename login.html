@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+{% extends 'jobapp/base.html' %}
+{% load widget_tweaks %}
+
+{% block body_block %}
+
+<div class="container mt-5 d-flex justify-content-center align-items-center">
+    <div class="row w-100 justify-content-center">
+        <div class="col-md-4">
+
+            <div class="card shadow-lg border-0 rounded-4">
+
+                <!-- Header -->
+                <div class="card-header text-center text-white rounded-top-4"
+                     style="background: linear-gradient(135deg, #198754, #20c997);">
+                    <h3 class="fw-bold mb-0">Welcome Back</h3>
+                    <small class="opacity-75">Login to continue</small>
+                </div>
+
+                <!-- Body -->
+                <div class="card-body p-4">
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Username -->
+                        <div class="form-floating mb-3">
+                            {{ form.username|add_class:"form-control"|attr:"placeholder:Username" }}
+                            <label class="text-muted">Username</label>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-floating mb-3">
+                            {{ form.password|add_class:"form-control"|attr:"placeholder:Password" }}
+                            <label class="text-muted">Password</label>
+                        </div>
+
+                        <!-- Forgot password -->
+                        <div class="text-end mb-3">
+                            <a href="{% url 'password_reset' %}"
+                               class="text-decoration-none small fw-semibold">
+                                Forgot password?
+                            </a>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-success btn-lg rounded-3">
+                                Sign In
+                            </button>
+
+                            <a href="{% url 'register' %}"
+                               class="btn btn-outline-secondary rounded-3">
+                                Create an account
+                            </a>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

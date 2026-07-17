@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+
+{% extends 'jobapp/base.html' %}
+{% load static %}
+{% block body_block %}
+
+<style>
+.card:hover {
+    transform: translateY(-10px);
+    transition: 0.2s ease-in-out;
+   
+}
+</style>
+
+
+
+
+        
+
+<section class="company-section ">
+
+    <div class="company-marquee">
+        <div class="company-track">
+
+            <img src="{% static 'jobapp/companies/capgemini.png' %}" alt="Capgemini">
+            <img src="{% static 'jobapp/companies/oracle.png' %}" alt="Oracle">
+            <img src="{% static 'jobapp/companies/dell.png' %}" alt="Dell">
+            <img src="{% static 'jobapp/companies/intel.png' %}" alt="Intel">
+            <img src="{% static 'jobapp/companies/cisco.png' %}" alt="Cisco">
+            <img src="{% static 'jobapp/companies/sap.jpg' %}" alt="SAP">
+            <img src="{% static 'jobapp/companies/hp.jpg' %}" alt="HP">
+            <img src="{% static 'jobapp/companies/deloitte.png' %}" alt="Deloitte">
+            <img src="{% static 'jobapp/companies/ey.png' %}" alt="EY">
+            <img src="{% static 'jobapp/companies/pwc.png' %}" alt="PwC">
+            <img src="{% static 'jobapp/companies/kpmg.png' %}" alt="KPMG">
+            <img src="{% static 'jobapp/companies/pepsico.png' %}" alt="PepsiCo">
+
+            <!-- DUPLICATE for seamless loop -->
+            <img src="{% static 'jobapp/companies/capgemini.png' %}">
+            <img src="{% static 'jobapp/companies/oracle.png' %}">
+            <img src="{% static 'jobapp/companies/dell.png' %}">
+            <img src="{% static 'jobapp/companies/intel.png' %}">
+            <img src="{% static 'jobapp/companies/cisco.png' %}">
+            <img src="{% static 'jobapp/companies/sap.jpeg' %}">
+            <img src="{% static 'jobapp/companies/hp.png' %}">
+            <img src="{% static 'jobapp/companies/deloitte.png' %}">
+            <img src="{% static 'jobapp/companies/ey.png' %}">
+            <img src="{% static 'jobapp/companies/pwc.png' %}">
+            <img src="{% static 'jobapp/companies/kpmg.png' %}">
+            <img src="{% static 'jobapp/companies/pepsico.png' %}">
+
+        </div>
+    </div>
+</section>
+<!-- HERO SECTION -->
+<section class="bg-light py-5">
+    <div class="container">
+
+        <div class="row align-items-center">
+
+            <!-- Text -->
+            <div class="col-md-6 animate-on-scroll">
+                <h1 class="display-5 fw-bold mb-3 animate-on-scroll">
+                    Find Your <span class="text-primary animate-on-scroll">Dream Job</span> Faster
+                </h1>
+                <p class="lead text-muted mb-4">
+                    Discover verified jobs from top companies and apply with confidence.
+                </p>
+
+                <div class="d-flex gap-3 animate-on-scroll">
+                    <a href="/jobs" class="btn btn-primary btn-lg rounded-3">
+                        Browse Jobs  
+                    </a>
+                    <a href="/register" class="btn btn-outline-secondary btn-lg rounded-3">
+                        Create Profile 
+                    </a>
+                </div>
+            </div>
+
+            <!-- Illustration -->
+            <div class="col-md-6 text-center animate-on-scroll" data-animate="fadeInRight" ">
+                <img src="https://illustrations.popsy.co/gray/work-from-home.svg"
+                     class="img-fluid "
+                     alt="Job Search Illustration">
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- TRUST METRICS -->
+<section class="py-4 bg-white border-bottom ">
+    <div class="container">
+        <div class="row text-center">
+
+            <div class="col-md-4 animate-on-scroll" data-animate="fadeInDown"">
+                <h3 class="fw-bold text-primary">10K+</h3>
+                <p class="text-muted mb-0">Active Jobs</p>
+            </div>
+
+            <div class="col-md-4 animate-on-scroll" data-animate="fadeInDown"">
+                <h3 class="fw-bold text-primary">5K+</h3>
+                <p class="text-muted mb-0">Companies</p>
+            </div>
+
+            <div class="col-md-4 animate-on-scroll" data-animate="fadeInDown"">
+                <h3 class="fw-bold text-primary">50K+</h3>
+                <p class="text-muted mb-0">Job Seekers</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="py-5">
+    <div class="container">
+
+        <div class="text-center mb-5 animate-on-scroll" data-animate="fadeInDown"">
+            <h2 class="fw-bold ">Why Choose Us?</h2>
+            <p class="text-muted">
+                Everything you need to hire or get hired — in one platform
+            </p>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- Feature 1 -->
+            <div class="col-md-4 animate-on-scroll" data-animate="fadeInLeft">
+                <div class="card h-100 border-0 shadow-sm rounded-4 text-center p-3">
+                    <i class="bi bi-person-workspace fs-1 text-primary mb-3"></i>
+                    <h5 class="fw-semibold">For Job Seekers</h5>
+                    <p class="text-muted">
+                        Build your profile, upload your resume, and apply to jobs in one click.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="col-md-4 animate-on-scroll" data-animate="fadeInDown">
+                <div class="card h-100 border-0 shadow-sm rounded-4 text-center p-3">
+                    <i class="bi bi-building fs-1 text-primary mb-3"></i>
+                    <h5 class="fw-semibold">For Employers</h5>
+                    <p class="text-muted">
+                        Post jobs, review applications, and hire the best candidates easily.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="col-md-4 animate-on-scroll" data-animate="fadeInRight">
+                <div class="card h-100 border-0 shadow-sm rounded-4 text-center p-3">
+                    <i class="bi bi-shield-check fs-1 text-primary mb-3"></i>
+                    <h5 class="fw-semibold">Verified Jobs</h5>
+                    <p class="text-muted">
+                        Every job listing is verified to ensure trust and authenticity.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- CALL TO ACTION -->
+<section class="bg-primary text-white py-5 ">
+    <div class="container text-center ">
+        <h2 class="fw-bold mb-3 animate-on-scroll" data-animate="fadeInUp">Start Your Career Journey Today</h2>
+        <p class="opacity-75 mb-4 animate-on-scroll" data-animate="fadeInUp">
+            Join thousands of professionals and companies already using our platform
+        </p>
+        <a href="/jobs" class="btn btn-light btn-lg rounded-3 fw-semibold animate-on-scroll" data-animate="fadeInUp">
+            Get Started Free
+        </a>
+    </div>
+</section>
+
+{% endblock %}

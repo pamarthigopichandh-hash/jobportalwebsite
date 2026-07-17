@@ -1,0 +1,45 @@
+{% extends 'jobapp/base.html' %}
+
+{% block body_block %}
+       
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Applications</h2>
+
+    {% for application in applications %}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+
+            <h5>{{ application.job.title }}</h5>
+
+            <p><strong>Applicant:</strong>
+                {{ application.applicant.username }}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                <span class="badge bg-info">
+                    {{ application.get_status_display }}
+                </span>
+            </p>
+
+            {% if application.status == "applied" %}
+                <a href="{% url 'update_application_status' application.id 'accept' %}"
+                   class="btn btn-success btn-sm">
+                   Accept
+                </a>
+
+                <a href="{% url 'update_application_status' application.id 'reject' %}"
+                   class="btn btn-danger btn-sm">
+                   Reject
+                </a>
+            {% endif %}
+
+        </div>
+    </div>
+    {% empty %}
+        <p>No applications yet.</p>
+    {% endfor %}
+</div>
+
+ {% endblock %}

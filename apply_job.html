@@ -1,0 +1,65 @@
+{% extends 'jobapp/base.html' %}
+{% load widget_tweaks %}
+
+{% block body_block %}
+<div class="container mt-5">
+    <div class="col-md-6 mx-auto">
+
+        <div class="card shadow p-4">
+            <h4>Apply for {{ job.title }}</h4>
+            <hr>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Full Name -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        Full Name {% if form.full_name.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ form.full_name|add_class:"form-control" }}
+                </div>
+
+                <!-- Email -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        Email {% if form.email.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ form.email|add_class:"form-control" }}
+                </div>
+
+                <!-- Phone -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        Phone {% if form.phone.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ form.phone|add_class:"form-control" }}
+                </div>
+
+                <!-- Resume -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        Upload Resume {% if form.resume.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ form.resume|add_class:"form-control" }}
+                </div>
+
+                <!-- Cover Letter -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        Cover Letter {% if form.cover_letter.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
+                    {{ form.cover_letter|add_class:"form-control" }}
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-success w-100">
+                    Submit Application
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}
